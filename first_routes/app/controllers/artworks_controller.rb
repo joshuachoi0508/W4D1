@@ -14,31 +14,34 @@ class ArtworksController < ApplicationController
   end
   
   def show
-    artwork = Artwork.find(params[:id])
+    artwork = Artwork.find_by_id(params[:id])
     render json: artwork
   end
   
   def update
-    artwork = Artwork.find(params[:id])
-    if artwork.update(artwork_params)
+    artwork = Artwork.find_by_id(params[:id])
+    if artwork && artwork.update(artwork_params)
       render json: artwork
-    else
+    elsif artwork
       render json: artwork.errors.full_messages, status: 418
+    else
+      render json: "doesn't exist", status: 418
     end
   end
   
   def destroy
-    artwork = Artwork.find(params[:id])
-    if artwork.destroy
-      render json: Artwork.all
-    else 
-      render json: artwork.errors.full_message, status: 418
+    artwork = Artwork.find_by_id(params[:id])
+    if artwork
+      artwork.destroy
+      render json: artwork
+    else
+      render json: "doesn't exist", status: 418
     end
   end
   
   private
   
   def artwork_params
-    params.require(:artwork).permit(:username)
+    params.require(:artwork).permit(:title, :image_url)
   end
 end

@@ -14,25 +14,28 @@ class UsersController < ApplicationController
   end
   
   def show
-    user = User.find(params[:id])
+    user = User.find_by_id(params[:id])
     render json: user
   end
   
   def update
-    user = User.find(params[:id])
-    if user.update(user_params)
+    user = User.find_by_id(params[:id])
+    if user && user.update(user_params)
       render json: user
-    else
+    elsif user
       render json: user.errors.full_messages, status: 418
+    else
+      render json: "doesn't exist", status: 418
     end
   end
   
   def destroy
-    user = User.find(params[:id])
-    if user.destroy
-      render json: User.all
+    user = User.find_by_id(params[:id])
+    if user
+      user.destroy
+      render json: user
     else 
-      render json: user.errors.full_message, status: 418
+      render json: "doesn't exist", status: 418
     end
   end
   
